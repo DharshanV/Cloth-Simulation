@@ -35,7 +35,7 @@ int main()
 	window.setCursor(GLFW_CURSOR_DISABLED);
 
 	Shader clothShader("Shader\\shader.vert", "Shader\\shader.frag");
-	Cloth cloth(5, 5, 10, 10);
+	Cloth cloth(10,10, 50,50);
 
 	while (!window.close())
 	{
@@ -49,7 +49,7 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		mat4 model(1.0f);
-		model = glm::translate(model,glm::vec3(-0.5,0.5,0));
+		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0,1.0f,0));
 		mat4 view(camera.GetViewMatrix());
 		mat4 projection = glm::perspective(45.0f, (float)screenWidth / screenHeight, .1f, 100.0f);
 
