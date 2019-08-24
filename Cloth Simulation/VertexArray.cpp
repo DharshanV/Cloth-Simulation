@@ -32,6 +32,5 @@ void VertexArray::addBuffer(const VertexBuffer& vb, const VertexBufferLayout& vb
 
 VertexArray::~VertexArray()
 {
-	cout << "DELETED VERTEX ARRAY" << endl;
 	glDeleteVertexArrays(1, &arrayID);
 }

@@ -6,27 +6,24 @@
 #include "VertexArray.h"
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+#include "Cloth.h"
 
 void processInput(GLFWwindow *window);
 void mouseCallBack(GLFWwindow* window, double xpos, double ypos);
 void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset);
 void resizeCallBack(GLFWwindow* window, int width, int height);
-float F(float x);
 
+int screenWidth = 800;
+int screenHeight = 600;
 
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-
-GLFW window(SCR_WIDTH, SCR_HEIGHT, "Cloth Simulation");
-Camera camera(glm::vec3(0.0f, 1.0f, 3.0f));
-float lastX = SCR_WIDTH / 2.0f;
-float lastY = SCR_HEIGHT / 2.0f;
+GLFW window(screenWidth, screenHeight, "Cloth Simulation");
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+float lastX = screenWidth / 2.0f;
+float lastY = screenHeight / 2.0f;
 bool firstMouse = true;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
-
-glm::vec3 boxPosition(-5.0, 0.0, 0.0);
 
 int main()
 {
@@ -37,65 +34,8 @@ int main()
 	window.setMouseMovementCallBack(mouseCallBack);
 	window.setCursor(GLFW_CURSOR_DISABLED);
 
-	Shader shader("Shader\\shader.vert", "Shader\\shader.frag");
-	ShaderTexture texture("Texture\\container.jpg");
-
-	float vertices[] = {
-		// positions          // normals			//texture
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,	 0.0f, 0.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,	 1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,	 1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,	 1.0f, 1.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,	 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,	 0.0f, 0.0f,
-
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,	 0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,	 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,	 1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,	 1.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,	 0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,	 0.0f, 0.0f,
-
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,	 1.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,	 1.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,	 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,	 0.0f, 1.0f,
-		-0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,	 0.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,	 1.0f, 0.0f,
-
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,	 1.0f, 0.0f,
-		 0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,	 1.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,	 0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,	 0.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,	 0.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,	 1.0f, 0.0f,
-
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,	 0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,	 1.0f, 1.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,	 1.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,	 1.0f, 0.0f,
-		-0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,	 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,	 0.0f, 1.0f,
-
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,	 0.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,	 1.0f, 1.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,	 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,	 1.0f, 0.0f,
-		-0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,	 0.0f, 0.0f,
-		-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,	 0.0f, 1.0f
-	};
-
-	VertexArray va;
-	VertexBuffer vb(vertices, sizeof(vertices));
-	VertexBufferLayout layout;
-	layout.push<float>(3);
-	layout.push<float>(3);
-	layout.push<float>(2);
-	va.addBuffer(vb, layout);
-	va.unbind();
-
-	shader.use();
-	shader.setInt("boxTexture", 0);
+	Shader clothShader("Shader\\shader.vert", "Shader\\shader.frag");
+	Cloth cloth(5, 5, 10, 10);
 
 	while (!window.close())
 	{
@@ -108,20 +48,16 @@ int main()
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		shader.use();
-		texture.bind(0);
-		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(.5f, .5f, .5f));
-		glm::mat4 view = camera.GetViewMatrix();
-		glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
+		mat4 model(1.0f);
+		model = glm::translate(model,glm::vec3(-0.5,0.5,0));
+		mat4 view(camera.GetViewMatrix());
+		mat4 projection = glm::perspective(45.0f, (float)screenWidth / screenHeight, .1f, 100.0f);
 
-		shader.setMat4f("model", glm::value_ptr(model));
-		shader.setMat4f("view", glm::value_ptr(view));
-		shader.setMat4f("projection", glm::value_ptr(projection));
-
-		va.bind();
-		glDrawArrays(GL_TRIANGLES, 0, 36);
-		va.unbind();
+		clothShader.use();
+		clothShader.setMat4f("model", value_ptr(model));
+		clothShader.setMat4f("view", value_ptr(view));
+		clothShader.setMat4f("projection", value_ptr(projection));
+		cloth.render();
 
 		window.swapBuffers();
 		window.getEvents();
@@ -129,13 +65,11 @@ int main()
 	return 0;
 }
 
-float F(float x) {
-	return x * x;
-}
-
 void resizeCallBack(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
+	screenWidth = width;
+	screenHeight = height;
 }
 
 void processInput(GLFWwindow* glfwwindow)
@@ -158,8 +92,6 @@ void processInput(GLFWwindow* glfwwindow)
 		camera.ProcessKeyboard(UP, deltaTime);
 	if (glfwGetKey(glfwwindow, GLFW_KEY_Q) == GLFW_PRESS)
 		camera.ProcessKeyboard(DOWN, deltaTime);
-	if (glfwGetKey(glfwwindow, GLFW_KEY_R) == GLFW_PRESS)
-		camera.Position = glm::vec3(0.0f, 1.0f, 3.0f);
 }
 
 void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset) {
