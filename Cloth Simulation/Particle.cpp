@@ -30,6 +30,11 @@ void Particle::setMoveable(bool value)
 	moveable = value;
 }
 
+void Particle::offsetPosition(const vec3& offset)
+{
+	position += offset;
+}
+
 const vec3& Particle::getPosition() const
 {
 	return position;

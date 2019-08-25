@@ -17,6 +17,7 @@ public:
 	void timeStep();
 	void addForce(const vec3& force);
 	void setMoveable(bool value = true);
+	void offsetPosition(const vec3& v);
 	const vec3& getPosition()const;
 	~Particle();
 private:
