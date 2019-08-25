@@ -10,14 +10,19 @@ Particle::Particle(const vec3& position)
 	moveable = true;
 	this->position = position;
 	oldPosition = position;
+	acceleration = vec3(0);
+	normal = vec3(0);
+	mass = 1;
 }
 
 void Particle::timeStep()
 {
-	if (!moveable) return;
-	vec3 temp = position;
-	position += (position - oldPosition)*(1.0f - DAMPING) + acceleration * TIME_STEPSIZE;
-	oldPosition = temp;
+	if (moveable) {
+		vec3 temp = position;
+		position = position + (position - oldPosition)*(1.0f - DAMPING) + acceleration * TIME_STEPSIZE;
+		oldPosition = temp;
+		acceleration = vec3(0);
+	}
 }
 
 void Particle::addForce(const vec3& force)
@@ -32,7 +37,9 @@ void Particle::setMoveable(bool value)
 
 void Particle::offsetPosition(const vec3& offset)
 {
-	position += offset;
+	if (moveable) {
+		position += offset;
+	}
 }
 
 const vec3& Particle::getPosition() const

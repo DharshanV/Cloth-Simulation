@@ -36,7 +36,7 @@ int main()
 
 	Shader clothShader("Shader\\shader.vert", "Shader\\shader.frag");
 	ShaderTexture boxTexture("Texture\\cloth.jpg");
-	Cloth cloth(5, 5, 10,10);
+	Cloth cloth(10, 5, 20,20);
 
 	clothShader.use();
 	clothShader.setInt("boxShader", 0);
@@ -61,6 +61,9 @@ int main()
 		clothShader.setMat4f("model", value_ptr(model));
 		clothShader.setMat4f("view", value_ptr(view));
 		clothShader.setMat4f("projection", value_ptr(projection));
+		cloth.addForce(vec3(0, -0.2, 0)*.05f);
+		cloth.windForce(vec3(0.5, .6, 0.2)*.05f);
+		cloth.timeStep();
 		cloth.render();
 
 		window.swapBuffers();

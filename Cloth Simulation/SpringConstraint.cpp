@@ -4,7 +4,7 @@ SpringConstraint::SpringConstraint(Particle * p1, Particle * p2)
 {
 	this->p1 = p1;
 	this->p2 = p2;
-	restDistance = glm::length(p2 - p1);
+	restDistance = glm::length(p2->getPosition() - p1->getPosition());
 }
 
 void SpringConstraint::satisfyConstraint()
