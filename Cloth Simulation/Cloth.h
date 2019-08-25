@@ -23,6 +23,3 @@ private:
 	int numParticlesWidth;
 	int numParticlesHeight;
 };
-
-vector<float>& operator += (vector<float>& data, const Particle* particle);
-
