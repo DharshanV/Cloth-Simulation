@@ -4,33 +4,62 @@ Cloth::Cloth(float width, float height, int numParticlesWidth, int numParticlesH
 {
 	this->numParticlesWidth = numParticlesWidth;
 	this->numParticlesHeight = numParticlesHeight;
-	particles.resize(numParticlesWidth*numParticlesHeight);
+	int size = numParticlesWidth * numParticlesHeight;
+
+	particles.resize(size);
+	data.resize(size * (3 + 2));
+	indices.resize(6 * (numParticlesWidth - 1)*(numParticlesHeight - 1));
+
+	int vertexPointer = 0;
+	int pointer = 0;
 	for (int x = 0; x < numParticlesWidth; x++) {
 		for (int y = 0; y < numParticlesHeight; y++) {
-			vec3 particlePosition(0);
-			particlePosition.x = width * (x / (float)numParticlesWidth);
-			particlePosition.y = -height * (y / (float)numParticlesHeight);
-			particlePosition.z = 0;
-			particles[index(x,y)] = Particle(particlePosition);
-		}
-	}
+			//Particle position
+			vec3 position;
+			position.x = (float)x / ((float)numParticlesWidth - 1) * width;
+			position.y = -(float)y / ((float)numParticlesHeight - 1) * height;
+			position.z = 0;
+			particles[index(x, y)] = position;
 
-	for (int x = 0; x < numParticlesWidth - 1; x++) {
-		for (int y = 0; y < numParticlesHeight - 1; y++) {
-			addTriangle(data, getParticle(x, y), getParticle(x + 1, y), getParticle(x, y + 1));
-			addTriangle(data, getParticle(x + 1, y + 1), getParticle(x + 1, y), getParticle(x, y + 1));
+			//Texture coods
+			data[vertexPointer * 5 + 3] = (float)y / ((float)numParticlesHeight - 1);
+			data[vertexPointer * 5 + 4] = (float)x / ((float)numParticlesWidth - 1);
+			vertexPointer++;
+
+			//indices
+			if (x >= numParticlesWidth - 1 || y >= numParticlesHeight- 1) {
+				continue;
+			}
+			int topLeft = (y*numParticlesWidth) + x;
+			int topRight = topLeft + 1;
+			int bottomLeft = ((y + 1)*numParticlesHeight) + x;
+			int bottomRight = bottomLeft + 1;
+			indices[pointer++] = topLeft;
+			indices[pointer++] = bottomLeft;
+			indices[pointer++] = topRight;
+			indices[pointer++] = topRight;
+			indices[pointer++] = bottomLeft;
+			indices[pointer++] = bottomRight;
 		}
 	}
 }
 
 void Cloth::render()
 {
+	drawUpdatedPosition();
+
 	VertexArray VAO;
 	VertexBuffer VBO(&data[0], 4 * data.size());
+	ElementBuffer EBO(&indices[0], 4 * indices.size());
+
 	VertexBufferLayout layout;
 	layout.push<float>(3);
+	layout.push<float>(2);
 	VAO.addBuffer(VBO, layout);
-	glDrawArrays(GL_TRIANGLES,0, data.size() / 3);
+
+	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+
+	VBO.unbind();
 	VAO.unbind();
 }
 
@@ -44,35 +73,21 @@ Particle* Cloth::getParticle(int x, int y)
 	return &particles[index(x, y)];
 }
 
-void Cloth::addTriangle(vector<float>& data, Particle* p1, Particle* p2, Particle* p3)
+void Cloth::drawUpdatedPosition()
 {
-	data += p1;
-	data += p2;
-	data += p3;
-}
+	int vertexPointer = 0;
+	for (int x = 0; x < numParticlesWidth; x++) {
+		for (int y = 0; y < numParticlesHeight; y++) {
+			const vec3& position = particles[index(x, y)].getPosition();
 
-void Cloth::addSquare(vector<float>& data, Particle * p1, Particle * p2, Particle * p3, Particle * p4)
-{
-	data += p1;
-	data += p2;
-	data += p3;
-	data += p4;
-}
-
-void Cloth::print(Particle* p) {
-	const vec3 position = p->getPosition();
-	cout << "("<< position.x << ", " << position.y << "),";
+			data[vertexPointer * 5 + 0] = position.x;
+			data[vertexPointer * 5 + 1] = position.y;
+			data[vertexPointer * 5 + 2] = position.z;
+			vertexPointer++;
+		}
+	}
 }
 
 Cloth::~Cloth()
 {
-}
-
-vector<float>& operator+=(vector<float>& data, const Particle* particle)
-{
-	const vec3 position = particle->getPosition();
-	data.push_back(position.x);
-	data.push_back(position.y);
-	data.push_back(position.z);
-	return data;
 }

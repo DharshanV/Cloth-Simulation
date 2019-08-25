@@ -35,7 +35,11 @@ int main()
 	window.setCursor(GLFW_CURSOR_DISABLED);
 
 	Shader clothShader("Shader\\shader.vert", "Shader\\shader.frag");
-	Cloth cloth(10,10, 50,50);
+	ShaderTexture boxTexture("Texture\\cloth.jpg");
+	Cloth cloth(5, 5, 10,10);
+
+	clothShader.use();
+	clothShader.setInt("boxShader", 0);
 
 	while (!window.close())
 	{
@@ -49,11 +53,11 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		mat4 model(1.0f);
-		model = glm::rotate(model, (float)glfwGetTime(), glm::vec3(0,1.0f,0));
 		mat4 view(camera.GetViewMatrix());
 		mat4 projection = glm::perspective(45.0f, (float)screenWidth / screenHeight, .1f, 100.0f);
 
 		clothShader.use();
+		boxTexture.bind(0);
 		clothShader.setMat4f("model", value_ptr(model));
 		clothShader.setMat4f("view", value_ptr(view));
 		clothShader.setMat4f("projection", value_ptr(projection));

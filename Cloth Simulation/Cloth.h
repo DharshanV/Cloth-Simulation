@@ -15,11 +15,10 @@ public:
 private:
 	int index(int x, int y);
 	Particle* getParticle(int x, int y);
-	void print(Particle* p);
-	void addTriangle(vector<float>& data, Particle* p1, Particle* p2, Particle* p3);
-	void addSquare(vector<float>& data, Particle* p1, Particle* p2, Particle* p3, Particle* p4);
+	void drawUpdatedPosition();
 private:
 	vector<float> data;
+	vector<unsigned int> indices;
 	vector<Particle> particles;
 	int numParticlesWidth;
 	int numParticlesHeight;
