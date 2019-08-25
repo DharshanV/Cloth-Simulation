@@ -62,7 +62,7 @@ int main()
 		clothShader.setMat4f("view", value_ptr(view));
 		clothShader.setMat4f("projection", value_ptr(projection));
 		cloth.addForce(vec3(0, -0.2, 0)*.05f);
-		cloth.windForce(vec3(0.5, .6, 0.2)*.05f);
+		cloth.windForce(vec3(0.7, .4, 0.4)*.05f);
 		cloth.timeStep();
 		cloth.render();
 

@@ -8,6 +8,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+glad.c
 glm/
 include/
 libraries/
