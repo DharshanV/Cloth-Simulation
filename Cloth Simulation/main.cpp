@@ -25,6 +25,8 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
+float windZ = .1f;
+
 int main()
 {
 	if (!window.isGood()) { glfwTerminate(); return -1; }
@@ -36,7 +38,7 @@ int main()
 
 	Shader clothShader("Shader\\shader.vert", "Shader\\shader.frag");
 	ShaderTexture boxTexture("Texture\\cloth.jpg");
-	Cloth cloth(10, 5, 20,20);
+	Cloth cloth(5, 10, 20,20);
 
 	clothShader.use();
 	clothShader.setInt("boxShader", 0);
@@ -49,10 +51,11 @@ int main()
 
 		processInput(window.getWindow());
 
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0,0,0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		mat4 model(1.0f);
+		model = glm::translate(model, glm::vec3(-3.0f, 1.0f, -7.0f));
 		mat4 view(camera.GetViewMatrix());
 		mat4 projection = glm::perspective(45.0f, (float)screenWidth / screenHeight, .1f, 100.0f);
 
@@ -61,8 +64,8 @@ int main()
 		clothShader.setMat4f("model", value_ptr(model));
 		clothShader.setMat4f("view", value_ptr(view));
 		clothShader.setMat4f("projection", value_ptr(projection));
-		cloth.addForce(vec3(0, -0.2, 0)*.05f);
-		cloth.windForce(vec3(0.7, .4, 0.4)*.05f);
+		cloth.addForce(vec3(0, -0.2, 0)*.25f);
+		cloth.windForce(vec3(0.2, .2, windZ)*.25f);
 		cloth.timeStep();
 		cloth.render();
 
@@ -102,7 +105,8 @@ void processInput(GLFWwindow* glfwwindow)
 }
 
 void scrollCallBack(GLFWwindow* window, double xoffset, double yoffset) {
-	camera.ProcessMouseScroll(yoffset);
+	//camera.ProcessMouseScroll(yoffset);
+	windZ += (yoffset *deltaTime);
 }
 
 void mouseCallBack(GLFWwindow* window, double xpos, double ypos) {
