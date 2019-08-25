@@ -138,9 +138,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\glad.c" />
     <ClCompile Include="Cloth.cpp" />
     <ClCompile Include="ElementBuffer.cpp" />
+    <ClCompile Include="glad.c" />
     <ClCompile Include="GLFW.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Particle.cpp" />
