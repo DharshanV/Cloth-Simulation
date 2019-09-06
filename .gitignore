@@ -8,7 +8,10 @@
 *.user
 *.userosscache
 *.sln.docstates
+
 glad.c
+stb_image.h
+
 glm/
 include/
 libraries/

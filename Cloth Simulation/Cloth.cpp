@@ -51,24 +51,18 @@ Cloth::Cloth(float width, float height, int numParticlesWidth, int numParticlesH
 			if (y < numParticlesHeight - 1) makeConstraint(getParticle(x, y), getParticle(x, y + 1));
 			if (x < numParticlesWidth - 1 && y < numParticlesHeight - 1) makeConstraint(getParticle(x, y), getParticle(x + 1, y + 1));
 			if (x < numParticlesWidth - 1 && y < numParticlesHeight - 1) makeConstraint(getParticle(x + 1, y), getParticle(x, y + 1));
-		}
-	}
-
-	for (int x = 0; x < numParticlesWidth; x++)
-	{
-		for (int y = 0; y < numParticlesHeight; y++)
-		{
 			if (x < numParticlesWidth - 2) makeConstraint(getParticle(x, y), getParticle(x + 2, y));
 			if (y < numParticlesHeight - 2) makeConstraint(getParticle(x, y), getParticle(x, y + 2));
 			if (x < numParticlesWidth - 2 && y < numParticlesHeight - 2) makeConstraint(getParticle(x, y), getParticle(x + 2, y + 2));
 			if (x < numParticlesWidth - 2 && y < numParticlesHeight - 2) makeConstraint(getParticle(x + 2, y), getParticle(x, y + 2));
 		}
-	}
+		if (x < 2) {
+			getParticle(0 + x, 0)->offsetPosition(vec3(0.5, 0.0, 0.0));
+			getParticle(0 + x, 0)->setMoveable(false);
 
-	for (int x = 0; x < numParticlesWidth; x++)
-	{
-		Particle* particle = getParticle(x,0);
-		particle->setMoveable(false);
+			getParticle(0 + x, 0)->offsetPosition(vec3(-0.5, 0.0, 0.0));
+			getParticle(numParticlesWidth - 1 - x, 0)->setMoveable(false);
+		}
 	}
 }
 

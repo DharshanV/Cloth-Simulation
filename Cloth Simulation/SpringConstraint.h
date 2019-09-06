@@ -8,6 +8,9 @@ public:
 	void satisfyConstraint();
 	~SpringConstraint();
 private:
+	float vecLength(const vec3& v);
+private:
+	bool connected;
 	float restDistance;
 	Particle* p1;
 	Particle* p2;

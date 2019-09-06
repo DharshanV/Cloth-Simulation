@@ -5,7 +5,7 @@ using namespace std;
 using namespace glm;
 #define DAMPING 0.01f
 #define TIME_STEPSIZE 0.5f*0.5f
-#define CONSTRAINT_ITERATIONS 15
+#define CONSTRAINT_ITERATIONS 10
 /*
 	Particle repersented by verlet intergration.
 */
@@ -24,8 +24,9 @@ private:
 	bool moveable;
 	float mass;
 	vec3 oldPosition;
-	vec3 position;
 	vec3 normal;
+	vec3 position;
+	vec3 velocity;
 	vec3 acceleration;
 };
 
